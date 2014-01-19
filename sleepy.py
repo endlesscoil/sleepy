@@ -1,19 +1,28 @@
 from app.app import Player, Sleepy
 from cherrymusicclient.api import api as cmapi
-from pandora import Pandora
+#from pandora import Pandora
+from app.sources import PandoraSource, CherryMusicSource
 
 
 #p = Player()
+# source = PandoraSource()
 
-sleepy = Sleepy(None)
+# source.authenticate('', '')
+# source.switch('Nuevo Flamenco')
+
+source = CherryMusicSource('http://darkness:8080')
+source.authenticate('', '')
+source.switch('sleepy')
+
+sleepy = Sleepy(source)
 
 ############ CherryMusic
-cmapi.url = 'http://darkness:8080'
-cmapi.login('', '')
-sleepy_playlists = cmapi.show_playlists(filter='sleepy')
-playlist = cmapi.load_playlist(sleepy_playlists[0]['plid'])
+# cmapi.url = 'http://darkness:8080'
+# cmapi.login('', '')
+# sleepy_playlists = cmapi.show_playlists(filter='sleepy')
+# playlist = cmapi.load_playlist(sleepy_playlists[0]['plid'])
 
-url = '{0}/serve/{1}'.format(cmapi.url, playlist[0]['urlpath'])
+# url = '{0}/serve/{1}'.format(cmapi.url, playlist[0]['urlpath'])
 
 ############ Pandora
 # pandora = Pandora()
@@ -30,13 +39,17 @@ url = '{0}/serve/{1}'.format(cmapi.url, playlist[0]['urlpath'])
 # url = next['audioUrlMap']['highQuality']['audioUrl']
 
 ############ Common
-sleepy._player.url = url
+# sleepy._player.url = url
 
 # sleepy.play()
 # while True:
 # 	pass
 
-sleepy._console_ui.artist = 'Opeth'
-sleepy._console_ui.title = 'Blackwater Park'
-sleepy._console_ui.album = 'Blackwater Park'
+# sleepy._console_ui.artist = 'Opeth'
+# sleepy._console_ui.title = 'Blackwater Park'
+# sleepy._console_ui.album = 'Blackwater Park'
+
+#############
+
+sleepy.next()
 sleepy.run()

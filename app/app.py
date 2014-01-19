@@ -3,7 +3,7 @@ pygst.require('0.10')
 import gst
 
 from .interfaces import ConsoleUI, WebUI
-from .sources import CherryMusic, Pandora
+from .sources import CherryMusicSource, PandoraSource
 
 class Sleepy(object):
     def __init__(self, source):
@@ -23,10 +23,21 @@ class Sleepy(object):
         self._player.stop()
 
     def next(self):
-        pass
+        url = self._source.next_song()
+        self._player.url = url
+
+        self._update_ui()
+        self.play()
 
     def prev(self):
         pass
+
+    def _update_ui(self):
+        song_info = self._source.song_info()
+
+        self._console_ui.artist = song_info.artist
+        self._console_ui.title = song_info.title
+        self._console_ui.album = song_info.album
 
 class Player(object):
     def __init__(self):
