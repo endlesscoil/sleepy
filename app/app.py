@@ -3,10 +3,19 @@ pygst.require('0.10')
 import gst
 
 from .interfaces import ConsoleUI, WebUI
-from .sources import CherryMusicSource, PandoraSource
+from .sources import *
+from .db import Session, Source
+
+SOURCES = {
+    'cherrymusic': CherryMusicSource,
+    'pandora': PandoraSource,
+}
 
 class Sleepy(object):
     def __init__(self, source):
+        self._session = Session()
+        print self._session.query(Source).all()
+
         self._source = source
         self._player = Player()
 

@@ -6,8 +6,8 @@ from cherrymusicclient import CherryMusicClient
 
 class CherryMusicSource(object):
     def __init__(self, url=None):
-        self.url = url
-        self._cherrymusic = CherryMusicClient(url)
+        self._url = None
+        self._cherrymusic = CherryMusicClient()
         self._authenticated = False
         self._current_song = None
 
@@ -28,7 +28,7 @@ class CherryMusicSource(object):
             next = self._cherrymusic.current_playlist.next_song()
             self._current_song = next
 
-        return '{0}/serve/{1}'.format(self.url, next.urlpath)
+        return '{0}/serve/{1}'.format(self._url, next.urlpath)
 
     def song_info(self):
         if self._cherrymusic.current_playlist is None:
@@ -41,8 +41,17 @@ class CherryMusicSource(object):
 
         return info
 
+    @property
+    def url(self):
+        return self._url
+
+    @url.setter
+    def url(self, value):
+        self._url = value
+        self._cherrymusic.url = value
+
 class PandoraSource(object):
-    def __init__(self):
+    def __init__(self, url=None):
         self._pandora = Pandora()
         self._authenticated = False
         self._current_station = None

@@ -10,7 +10,8 @@ from app.sources import PandoraSource, CherryMusicSource
 # source.authenticate('', '')
 # source.switch('Nuevo Flamenco')
 
-source = CherryMusicSource('http://darkness:8080')
+source = CherryMusicSource()
+source.url = ''
 source.authenticate('', '')
 source.switch('sleepy')
 
