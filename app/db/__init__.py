@@ -1,5 +1,5 @@
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 
 db = create_engine('sqlite:///sleepy.db')
@@ -16,3 +16,12 @@ class Source(Base):
 	url = Column(String(255))
 	username = Column(String(255), nullable=False)
 	password = Column(String(255), nullable=False)
+
+	playlists = relationship('SourcePlaylist', backref='source', cascade='all, delete, delete-orphan')
+
+class SourcePlaylist(Base):
+	__tablename__ = 'source_playlists'
+
+	id = Column(Integer, primary_key=True)
+	source_id = Column(Integer, ForeignKey('sources.id'))
+	name = Column(String(255), nullable=False)

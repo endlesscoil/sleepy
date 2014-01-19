@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from app.app import Player, Sleepy
 from cherrymusicclient.api import api as cmapi
 #from pandora import Pandora
@@ -10,12 +12,13 @@ from app.sources import PandoraSource, CherryMusicSource
 # source.authenticate('', '')
 # source.switch('Nuevo Flamenco')
 
-source = CherryMusicSource()
-source.url = ''
-source.authenticate('', '')
-source.switch('sleepy')
+# source = CherryMusicSource()
+# source.url = ''
+# source.authenticate('', '')
+# source.switch('sleepy')
 
-sleepy = Sleepy(source)
+sleepy = Sleepy()
+sleepy._current_source.authenticate()
 
 ############ CherryMusic
 # cmapi.url = 'http://darkness:8080'

@@ -1,7 +1,10 @@
+import logging
 import urwid
 
 class ConsoleUI(object):
     def __init__(self):
+        self.log = logging.getLogger(self.__class__.__name__)
+
         self.program_label = urwid.Text(u'Sleepy v0.1', align='center')
         self.artist_label = urwid.Text(u'Artist: ', align='right')
         self.artist_data = urwid.Text(u'', align='left')
@@ -28,7 +31,6 @@ class ConsoleUI(object):
     
     @artist.setter
     def artist(self, value):
-        print value
         self.artist_data.set_text(value)
 
     @property
@@ -48,4 +50,5 @@ class ConsoleUI(object):
         self.album_data.set_text(value)
 
 class WebUI(object):
-    pass
+    def __init__(self):
+        self.log = logging.getLogger(self.__class__.__name__)
