@@ -1,6 +1,11 @@
-import pygst
-pygst.require('0.10')
-import gst
+#import pygst
+#pygst.require('1.0')
+import gi
+gi.require_version('Gst', '1.0')
+from gi.repository import Gst
+Gst.version()
+
+#import gst
 import logging
 
 from .interfaces import ConsoleUI, WebUI
@@ -68,7 +73,14 @@ class Player(object):
         self._player.set_property('video-sink', fakesink)
 
         self._pipeline = gst.Pipeline("RadioPipe")
+
+        self._bus = self._pipeline.get_bus()
+        self._bus.connect("message::eos", self._on_message)
+        self._bus.add_signal_watch()
+
         self._pipeline.add(self._player)
+
+        #self._bus.set_sync_handler(self._on_message)
 
     def play(self):
         self.log.debug('Setting state to PLAYING')
@@ -77,6 +89,23 @@ class Player(object):
     def stop(self):
         self.log.debug('Setting state to PAUSED')
         self._pipeline.set_state(gst.STATE_PAUSED)
+
+    def _on_message(self, bus, message):
+        t = message.type
+
+        print 'msg', message
+        if t == gst.MESSAGE_EOS:
+            self._player.set_state(gst.STATE_NULL)
+            self.error = 'EOS'
+
+        elif t == gst.MESSAGE_ERROR:
+            self._player.set_state(gst.STATE_NULL)
+            err, debug = message.parse_error()
+            self.log.error("gst error: %s", err)
+
+            self.error = 'ERROR: {0}'.format(err)
+
+        #return gst.BUS_PASS
 
     @property
     def url(self):

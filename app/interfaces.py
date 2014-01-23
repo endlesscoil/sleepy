@@ -5,6 +5,8 @@ class ConsoleUI(object):
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
 
+        self.error_text = ''
+        self._error = urwid.Text(u'')
         self.program_label = urwid.Text(u'Sleepy v0.1', align='center')
         self.artist_label = urwid.Text(u'Artist: ', align='right')
         self.artist_data = urwid.Text(u'', align='left')
@@ -17,13 +19,30 @@ class ConsoleUI(object):
         self.album_box = urwid.Columns([self.album_label, self.album_data])
         self.divider = urwid.Divider()
 
-        self.pile = urwid.Pile([self.program_label, self.divider, self.artist_box, self.title_box, self.album_box])
+        self.pile = urwid.Pile([self.program_label, self.divider, self.artist_box, self.title_box, self.album_box, self._error])
 
         self.bg = urwid.Filler(self.pile)
-        self.loop = urwid.MainLoop(self.bg)
+        self.loop = urwid.MainLoop(self.bg, unhandled_input=self._handle_input)
 
     def run(self):
         self.loop.run()
+
+    def _handle_input(self, key):
+        if key in ('q', 'Q'):
+            raise urwid.ExitMainLoop()
+
+        elif key in ('a', 'A'):
+            self.error = 'hi mom'
+
+    @property
+    def error(self):
+        return self._error_text
+    
+    @error.setter
+    def error(self, value):
+        self._error_text = value
+        self._error.set_text(value)
+        self.loop.draw_screen()
 
     @property
     def artist(self):
