@@ -29,6 +29,8 @@ class ConsoleUI(object):
 
     def _handle_input(self, key):
         if key in ('q', 'Q'):
+            self.log.debug('die')
+
             raise urwid.ExitMainLoop()
 
         elif key in ('a', 'A'):
