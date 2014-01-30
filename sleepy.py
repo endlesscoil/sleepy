@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import sys, os
+
 from app.app import Player, Sleepy
 from cherrymusicclient.api import api as cmapi
 #from pandora import Pandora
@@ -16,6 +18,9 @@ from app.sources import PandoraSource, CherryMusicSource
 # source.url = ''
 # source.authenticate('', '')
 # source.switch('sleepy')
+
+# sys.stderr.close()
+# os.close(2)
 
 sleepy = Sleepy()
 sleepy._current_source.authenticate()
