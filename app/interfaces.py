@@ -27,6 +27,9 @@ class ConsoleUI(object):
     def run(self):
         self.loop.run()
 
+    def redraw(self):
+        self.loop.draw_screen()
+
     def _handle_input(self, key):
         if key in ('q', 'Q'):
             self.log.debug('die')

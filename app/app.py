@@ -1,9 +1,5 @@
 import pygst
 pygst.require('0.10')
-#import gi
-#gi.require_version('Gst', '1.0')
-#from gi.repository import Gst
-#Gst.version()
 
 import gst
 import logging
@@ -15,20 +11,11 @@ from .interfaces import ConsoleUI, WebUI
 from .sources import *
 from .db import Session, Source
 from .constants import SOURCES
+from .decorators import log_method
 
 class Sleepy(object):
     def __init__(self):
-        logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)7s - %(name)20s:%(funcName)-15s - %(message)s')
-        logging.getLogger("requests").setLevel(logging.WARNING)
-
-        fileHandler = logging.FileHandler('log.txt')
-        fileFormatter = logging.Formatter('%(asctime)s - %(levelname)7s - %(name)20s:%(funcName)-15s - %(message)s')
-        fileHandler.setFormatter(fileFormatter)
-
-        self.log = logging.getLogger('')
-        self.log.addHandler(fileHandler)
-        self.log.propagate = False
-        self.log.info('Starting up..')
+        self.log = logging.getLogger(self.__class__.__name__)
 
         self._session = Session()
         self._sources = Sources(self._session)
@@ -55,8 +42,8 @@ class Sleepy(object):
         url = self._current_source.next_song()
         self._player.url = url
 
-        self._update_ui()
-        self.play()
+        #self._update_ui()
+        #self.play()
 
     def prev(self):
         pass
@@ -69,6 +56,8 @@ class Sleepy(object):
         self._console_ui.title = song_info.title
         self._console_ui.album = song_info.album
 
+        self._console_ui.redraw()
+
 class Player(object):
     def __init__(self, sleepy):
         self.sleepy = sleepy
@@ -77,7 +66,7 @@ class Player(object):
         pulse = gst.element_factory_make("pulsesink", "pulse")
         #fakesink = gst.element_factory_make("fakesink", "fakesink")
 
-        self._player = gst.element_factory_make("playbin", "player")
+        self._player = gst.element_factory_make("playbin2", "player")
         self._player.set_property('audio-sink', pulse)
         #self._player.set_property('video-sink', fakesink)
 
@@ -86,36 +75,43 @@ class Player(object):
         self._pipeline.add(self._player)
 
         self._bus = self._pipeline.get_bus()
-        ##### WORKS ... kinda
-        self._bus.set_sync_handler(self._on_message)
-        ##### /WORKS
 
         self._bus.enable_sync_message_emission()
         self._bus.add_signal_watch()
-        self._bus.connect('message', self._on_message)
+        self._bus.set_sync_handler(self._on_message)
 
-        # self._bus.add_signal_watch()
-        # self._bus.connect("message", self._on_message)
+        self._player.connect("about-to-finish", self.about_to_finish)
+        #self._bus.connect('message', self._on_message)
+        #self._bus.connect('stream_start', self.stream_start)
 
-        # self._bus.add_signal_watch()
-        # self._bus.connect("message", self._on_message)
+    @log_method
+    def stream_start(self, player):
+        pass
 
-        #self._bus.set_sync_handler(self._bus.sync_signal_handler)
-        #self._bus.connect('sync-message::element', _on_message)
-        
+    @log_method        
+    def about_to_finish(self, player):
+        self.sleepy.next()
 
+    @log_method
+    def audio_changed(self, player):
+        self.log.debug('audio changed')
+
+    @log_method
     def play(self):
         self.log.debug('Setting state to PLAYING')
         self._pipeline.set_state(gst.STATE_PLAYING)
 
+    @log_method
     def stop(self):
         self.log.debug('Setting state to PAUSED')
         self._pipeline.set_state(gst.STATE_PAUSED)
 
+    @log_method
     def _seek(self, location):
         try:
             self.log.info('Seeking to {0}'.format(location))
-            event = gst.event_new_seek(1.0, gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_ACCURATE, gst.SEEK_TYPE_SET, location, gst.SEEK_TYPE_NONE, 0)
+            event = gst.event_new_seek(1.0, gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_ACCURATE, 
+                                        gst.SEEK_TYPE_SET, location, gst.SEEK_TYPE_NONE, 0)
 
             res = self._player.send_event(event)
             if res:
@@ -123,6 +119,7 @@ class Player(object):
                 self._player.set_new_stream_time(0L)
             else:
                 self.log.error('error seeking to {0}'.format(location))
+
         except Exception, err:
             self.log.error('Error: ' + str(err))
 
@@ -130,27 +127,30 @@ class Player(object):
         try:
             t = message.type
 
-            #self.log.info('ON MESSAGE')
-
             #print 'msg', message
             if t == gst.MESSAGE_EOS:
-                #self.log.info('wat %s %s', type(bus), str(self._pipeline.get_state()))
-                #self._pipeline.set_state(gst.STATE_NULL)
-                #self.sleepy.next()
-                
-                #self.log.info('wat %s %s', type(bus), str(self._pipeline.get_state()))
-                #bus.set_state(gst.STATE_NULL)
-                #self.log.info('wat2')
-                self._seek(0L)
+                #self._seek(0L)
                 self.sleepy._console_ui.error = 'EOS'
-                self.sleepy.next()
-                #self.log.info('wat3')
+                self.log.info('EOS')
+                #self.sleepy.next()
+
+            # elif t == gst.MESSAGE_STREAM_STATUS:
+            #     #self.log.debug('stream status!')
+            #     #status = message.parse_stream_status()
+            #     #self.log.error(status[0].value_name, status[1])
+            #     #self.sleepy._update_ui()
+
+            elif t == gst.MESSAGE_DURATION:
+                dur = message.parse_duration()
+
+                if dur[0] == gst.FORMAT_TIME:
+                    self.sleepy._update_ui()
 
             elif t == gst.MESSAGE_ERROR:
-                #self._pipeline.set_state(gst.STATE_NULL)
                 err, debug = message.parse_error()
 
-                self.sleepy._console_ui.error = 'ERROR: {0}'.format(err)
+                self.log.error('gstreamer error: {0}'.format(err))
+
         except Exception, err:
             self.log.error(str(err))
 
