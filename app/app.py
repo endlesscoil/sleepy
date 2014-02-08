@@ -112,6 +112,20 @@ class Player(object):
         self.log.debug('Setting state to PAUSED')
         self._pipeline.set_state(gst.STATE_PAUSED)
 
+    def _seek(self, location):
+        try:
+            self.log.info('Seeking to {0}'.format(location))
+            event = gst.event_new_seek(1.0, gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_ACCURATE, gst.SEEK_TYPE_SET, location, gst.SEEK_TYPE_NONE, 0)
+
+            res = self._player.send_event(event)
+            if res:
+                self.log.info('setting stream time to 0')
+                self._player.set_new_stream_time(0L)
+            else:
+                self.log.error('error seeking to {0}'.format(location))
+        except Exception, err:
+            self.log.error('Error: ' + str(err))
+
     def _on_message(self, bus, message):
         try:
             t = message.type
@@ -120,18 +134,20 @@ class Player(object):
 
             #print 'msg', message
             if t == gst.MESSAGE_EOS:
-                self.log.info('wat %s %s', type(bus), str(self._pipeline.get_state()))
-                self._pipeline.set_state(gst.STATE_NULL)
+                #self.log.info('wat %s %s', type(bus), str(self._pipeline.get_state()))
+                #self._pipeline.set_state(gst.STATE_NULL)
                 #self.sleepy.next()
                 
                 #self.log.info('wat %s %s', type(bus), str(self._pipeline.get_state()))
                 #bus.set_state(gst.STATE_NULL)
                 #self.log.info('wat2')
+                self._seek(0L)
                 self.sleepy._console_ui.error = 'EOS'
-                self.log.info('wat3')
+                self.sleepy.next()
+                #self.log.info('wat3')
 
             elif t == gst.MESSAGE_ERROR:
-                self._pipeline.set_state(gst.STATE_NULL)
+                #self._pipeline.set_state(gst.STATE_NULL)
                 err, debug = message.parse_error()
 
                 self.sleepy._console_ui.error = 'ERROR: {0}'.format(err)
