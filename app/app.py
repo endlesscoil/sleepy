@@ -22,7 +22,7 @@ class Sleepy(object):
         self._current_source = self._sources.sources['CherryMusic']   # TEMP
         self._player = Player(self)
 
-        self._console_ui = ConsoleUI()
+        self._console_ui = ConsoleUI(self)
         self._web_ui = WebUI()
 
     def run(self):
@@ -37,10 +37,16 @@ class Sleepy(object):
         self.log.info('Stopping..')
         self._player.stop()
 
-    def next(self):
+    def next(self, autoplay=False):
         self.log.info('Getting next song..')
         url = self._current_source.next_song()
-        self._player.url = url
+
+        if autoplay:
+            self.stop()
+            self._player.url = url
+            self.play()
+        else:
+            self._player.url = url
 
     def prev(self):
         pass
@@ -97,11 +103,16 @@ class Player(object):
 
     @log_method
     def stop(self):
-        self.log.debug('Setting state to PAUSED')
-        self._pipeline.set_state(gst.STATE_PAUSED)
+        self.log.debug('Setting state to NULL')
+        self._pipeline.set_state(gst.STATE_NULL)
 
     @log_method
-    def _seek(self, location):
+    def pause(self):
+        self.log.debug('Setting state to PAUSE')
+        self._pipeline.set_state(gst.STATE_PAUSE)
+
+    @log_method
+    def seek(self, location):
         try:
             self.log.info('Seeking to {0}'.format(location))
             event = gst.event_new_seek(1.0, gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_ACCURATE, 

@@ -2,7 +2,7 @@ import logging
 import urwid
 
 class ConsoleUI(object):
-    def __init__(self):
+    def __init__(self, sleepy):
         self.log = logging.getLogger(self.__class__.__name__)
 
         self.error_text = ''
@@ -24,6 +24,8 @@ class ConsoleUI(object):
         self.bg = urwid.Filler(self.pile)
         self.loop = urwid.MainLoop(self.bg, unhandled_input=self._handle_input)
 
+        self._sleepy = sleepy
+
     def run(self):
         self.loop.run()
 
@@ -35,6 +37,9 @@ class ConsoleUI(object):
             self.log.debug('die')
 
             raise urwid.ExitMainLoop()
+
+        elif key in ('n', 'N'):
+            self._sleepy.next(autoplay=True)
 
     @property
     def error(self):
