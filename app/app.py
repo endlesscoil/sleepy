@@ -42,9 +42,6 @@ class Sleepy(object):
         url = self._current_source.next_song()
         self._player.url = url
 
-        #self._update_ui()
-        #self.play()
-
     def prev(self):
         pass
 
@@ -64,12 +61,9 @@ class Player(object):
         self.log = logging.getLogger(self.__class__.__name__)
 
         pulse = gst.element_factory_make("pulsesink", "pulse")
-        #fakesink = gst.element_factory_make("fakesink", "fakesink")
 
         self._player = gst.element_factory_make("playbin2", "player")
         self._player.set_property('audio-sink', pulse)
-        #self._player.set_property('video-sink', fakesink)
-
 
         self._pipeline = gst.Pipeline("RadioPipe")
         self._pipeline.add(self._player)
@@ -127,12 +121,9 @@ class Player(object):
         try:
             t = message.type
 
-            #print 'msg', message
             if t == gst.MESSAGE_EOS:
-                #self._seek(0L)
                 self.sleepy._console_ui.error = 'EOS'
                 self.log.info('EOS')
-                #self.sleepy.next()
 
             # elif t == gst.MESSAGE_STREAM_STATUS:
             #     #self.log.debug('stream status!')

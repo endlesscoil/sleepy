@@ -36,9 +36,6 @@ class ConsoleUI(object):
 
             raise urwid.ExitMainLoop()
 
-        elif key in ('a', 'A'):
-            self.error = 'hi mom'
-
     @property
     def error(self):
         return self._error_text
