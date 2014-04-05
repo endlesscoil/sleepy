@@ -22,10 +22,12 @@ class Sleepy(object):
         self._current_source = self._sources.sources['CherryMusic']   # TEMP
         self._player = Player(self)
 
+        self._running = False
         self._console_ui = ConsoleUI(self)
         self._web_ui = WebUI()
 
     def run(self):
+        self._running = True
         self.log.info('Running..')
         self._console_ui.run()
 
@@ -36,6 +38,7 @@ class Sleepy(object):
     def stop(self):
         self.log.info('Stopping..')
         self._player.stop()
+        self._update_ui()
 
     def next(self, autoplay=False):
         self.log.info('Getting next song..')
@@ -43,23 +46,27 @@ class Sleepy(object):
 
         if autoplay:
             self.stop()
-            self._player.url = url
-            self.play()
-        else:
-            self._player.url = url
 
+        if url:
+            self._player.url = url
+            if autoplay:
+                self.play()
+        else:
+            self.log.info('Reached end of playlist')
+    
     def prev(self):
         pass
 
     def _update_ui(self):
-        self.log.debug('Updating user interface..')
-        song_info = self._current_source.song_info()
+        if self._running:
+            self.log.debug('Updating user interface..')
+            song_info = self._current_source.song_info()
 
-        self._console_ui.artist = song_info.artist
-        self._console_ui.title = song_info.title
-        self._console_ui.album = song_info.album
+            self._console_ui.artist = song_info.artist
+            self._console_ui.title = song_info.title
+            self._console_ui.album = song_info.album
 
-        self._console_ui.redraw()
+            self._console_ui.redraw()
 
 class Player(object):
     def __init__(self, sleepy):

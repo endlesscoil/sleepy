@@ -39,14 +39,16 @@ class CherryMusicSource(object):
     def next_song(self):
         self.log.info('Retrieving next song..')
 
-        next = None
+        ret = next = None
         if self._cherrymusic.current_playlist:
             next = self._cherrymusic.current_playlist.next_song()
             self._current_song = next
 
-        self.log.debug('Next song: %s', next.urlpath)
+        if next:
+            self.log.debug('Next song: %s', next.urlpath)
+            ret = '{0}/serve/{1}'.format(self._url, next.urlpath)
 
-        return '{0}/serve/{1}'.format(self._url, next.urlpath)
+        return ret
 
     def song_info(self):
         self.log.info('Retrieving song info..')
@@ -54,9 +56,12 @@ class CherryMusicSource(object):
             return None
 
         info = namedtuple('Song', 'artist, album, title')
-        info.artist = self._current_song.artist
-        info.album = self._current_song.album
-        info.title = self._current_song.title
+        info.artist = info.album = info.title = ''
+
+        if self._current_song:
+            info.artist = self._current_song.artist
+            info.album = self._current_song.album
+            info.title = self._current_song.title
 
         return info
 
