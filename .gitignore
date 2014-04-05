@@ -1,3 +1,4 @@
 *.pyc
 db_init.py
 sleepy.db
+*.sublime-*
