@@ -19,7 +19,7 @@ class Sleepy(object):
 
         self._session = Session()
         self._sources = Sources(self._session)
-        self._current_source = self._sources.sources['CherryMusic']   # TEMP
+        self._current_source = self._sources.sources['Pandora']   # TEMP
         self._player = Player(self)
 
         self._running = False
@@ -152,8 +152,7 @@ class Player(object):
             elif t == gst.MESSAGE_DURATION:
                 dur = message.parse_duration()
 
-                if dur[0] == gst.FORMAT_TIME:
-                    self.sleepy._update_ui()
+                self.sleepy._update_ui()
 
             elif t == gst.MESSAGE_ERROR:
                 err, debug = message.parse_error()

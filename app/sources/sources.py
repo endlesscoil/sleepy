@@ -120,7 +120,7 @@ class PandoraSource(object):
         return self._authenticated
 
     def switch(self, station_name):
-        self.log.info('Switching playlist to %s', playlist_name)
+        self.log.info('Switching playlist to %s', station_name)
 
         self._current_station = None
 
