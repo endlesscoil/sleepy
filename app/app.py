@@ -19,7 +19,7 @@ class Sleepy(object):
 
         self._session = Session()
         self._sources = Sources(self._session)
-        self._current_source = self._sources.sources['Pandora']   # TEMP
+        self._current_source = self._sources.sources['CherryMusic']   # TEMP
         self._player = Player(self)
 
         self._running = False
