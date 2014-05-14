@@ -3,3 +3,4 @@ db_init.py
 sleepy.db
 log.txt
 *.sublime-*
+temp/
