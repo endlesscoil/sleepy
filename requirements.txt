@@ -1,0 +1,14 @@
+SQLAlchemy==0.9.4
+argparse==1.2.1
+-e git+scott@darkness:code/bare-repos/cherrymusicclient@6f1daa677743be903afb231dc258c741d284c720#egg=cherrymusicclient-dev
+python-pandora==0.10
+requests==2.2.1
+urwid==1.2.1
+wsgiref==0.1.2
+
+# From source:
+#
+# pygtk
+# pygst
+# gobject
+# glib
