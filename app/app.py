@@ -24,7 +24,16 @@ class Sleepy(object):
 
         self._running = False
         self._console_ui = ConsoleUI(self)
-        self._web_ui = WebUI()
+        self._web_ui = WebUI(self)
+
+        self._current_track = (None, None, None)
+
+    @property
+    def current_track(self):
+        return self._current_track
+
+    def shutdown(self):
+        self._web_ui.stop()
 
     def run(self):
         self._running = True
@@ -60,11 +69,11 @@ class Sleepy(object):
     def _update_ui(self):
         if self._running:
             self.log.debug('Updating user interface..')
-            song_info = self._current_source.song_info()
+            self._current_track = self._current_source.song_info()
 
-            self._console_ui.artist = song_info.artist
-            self._console_ui.title = song_info.title
-            self._console_ui.album = song_info.album
+            self._console_ui.artist = self._current_track.artist
+            self._console_ui.title = self._current_track.title
+            self._console_ui.album = self._current_track.album
 
             self._console_ui.redraw()
 

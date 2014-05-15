@@ -1,8 +1,16 @@
 import logging
 import urwid
+import threading
 
-class ConsoleUI(object):
+from tornado.wsgi import WSGIContainer
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
+
+from .web import flask_app
+
+class ConsoleUI(threading.Thread):
     def __init__(self, sleepy):
+        threading.Thread.__init__(self)
         self.log = logging.getLogger(self.__class__.__name__)
 
         self.error_text = ''
@@ -35,6 +43,8 @@ class ConsoleUI(object):
     def _handle_input(self, key):
         if key in ('q', 'Q'):
             self.log.debug('die')
+
+            self._sleepy.shutdown()
 
             raise urwid.ExitMainLoop()
 
@@ -75,6 +85,26 @@ class ConsoleUI(object):
     def album(self, value):
         self.album_data.set_text(value)
 
-class WebUI(object):
-    def __init__(self):
+
+class WebUI(threading.Thread):
+    def __init__(self, sleepy):
+        threading.Thread.__init__(self)
+
         self.log = logging.getLogger(self.__class__.__name__)
+
+        self._sleepy = sleepy
+        setattr(flask_app, 'sleepy', sleepy)
+
+        self._server = HTTPServer(WSGIContainer(flask_app))
+        self._server.listen(5000)
+        self._instance = IOLoop.instance()
+
+        self.start()
+
+    def run(self):
+        self._running = True
+
+        self._instance.start()
+
+    def stop(self):
+        self._instance.stop()
