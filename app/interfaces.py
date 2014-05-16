@@ -5,6 +5,7 @@ import threading
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
+import tornado.autoreload
 
 from .web import flask_app
 
@@ -104,6 +105,7 @@ class WebUI(threading.Thread):
     def run(self):
         self._running = True
 
+        tornado.autoreload.start(self._instance)
         self._instance.start()
 
     def stop(self):

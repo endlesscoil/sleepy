@@ -1,21 +1,7 @@
 from flask import Flask, g
+from .views import frontend
 
-flask_app = Flask('sleepy')
-flask_app.debug = False
+flask_app = Flask('sleepy', template_folder='app/web/templates')
+flask_app.debug = True
 
-@flask_app.route('/')
-def index():
-    track = flask_app.sleepy.current_track
-
-    html = """
-    <html>
-    <body>
-    <h1>Now Playing</h1>
-    <div>{track.artist}</div>
-    <div>{track.title}</div>
-    <div>{track.album}</div>
-    </vody>
-    </html>
-    """.format(track=track)
-
-    return html
+flask_app.register_blueprint(frontend)

@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Now Playing</h1>
+    {% if track is not none %}
+        <div>{{track.artist}}</div>
+        <div>{{track.title}}</div>
+        <div>{{track.album}}</div>
+    {% else %}
+        <div>Nothing!</div>
+    {% endif %}
+{% endblock %}
