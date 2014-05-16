@@ -1,12 +1,37 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h1>Now Playing</h1>
-    {% if track is not none %}
-        <div>{{track.artist}}</div>
-        <div>{{track.title}}</div>
-        <div>{{track.album}}</div>
-    {% else %}
-        <div>Nothing!</div>
-    {% endif %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4" style="border: 1px dashed lightgrey; padding-bottom: 10px;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="text-center">Now Playing</h4>
+                    </div>
+                </div>
+                {% if track is not none %}
+                <div class="row">
+                    <div class="col-md-6 col-md-offset-3">
+                        <div class="row">
+                            <div class="col-md-6"><b>Title</b></div>
+                            <div class="col-md-6">{{track.title}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">Artist</div>
+                            <div class="col-md-6">{{track.artist}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">Album</div>
+                            <div class="col-md-6">{{track.album}}</div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                    <div class="row">
+                        <div class="col-md-12">Nothing!</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
