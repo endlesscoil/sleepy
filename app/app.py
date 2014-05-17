@@ -149,8 +149,7 @@ class Player(object):
             t = message.type
 
             if t == gst.MESSAGE_EOS:
-                self.sleepy._console_ui.error = 'EOS'
-                self.log.info('EOS')
+                self.log.info('End of stream reached.')
 
             # elif t == gst.MESSAGE_STREAM_STATUS:
             #     #self.log.debug('stream status!')
