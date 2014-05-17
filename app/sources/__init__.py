@@ -1,6 +1,6 @@
 import logging
 
-from ..db import Session, Source
+from ..db import Source
 from .sources import CherryMusicSource, PandoraSource
 
 SOURCES = {

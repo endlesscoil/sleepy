@@ -2,8 +2,67 @@
 
 {% block body %}
     <div class="container">
-        <div>
-            {{ source.name }}
-        </div>
+        <form role="form" method="POST" action="{{ form_target }}">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.name.label }} {{ form.name(class_='form-control') }}
+            </div>
+            {% if form.name.errors %}
+                <ul class="text-danger">
+                    {% for error in form.name.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="form-group">
+                {{ form.type.label }} {{ form.type(class_='form-control') }}
+            </div>
+            {% if form.type.errors %}
+                <ul class="text-danger">
+                    {% for error in form.type.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="form-group">
+                {{ form.url.label }} {{ form.url(class_='form-control') }}
+            </div>
+            {% if form.url.errors %}
+                <ul class="text-danger">
+                    {% for error in form.url.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="form-group">
+                {{ form.username.label }} {{ form.username(class_='form-control') }}
+            </div>
+            {% if form.username.errors %}
+                <ul class="text-danger">
+                    {% for error in form.username.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="form-group">
+                {{ form.password.label }} {{ form.password(class_='form-control') }}
+            </div>
+            {% if form.password.errors %}
+                <ul class="text-danger">
+                    {% for error in form.password.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="form-group">
+                {{ form.submit(class_="btn btn-default") }}
+            </div>
+        </form>
     </div>
 {% endblock %}

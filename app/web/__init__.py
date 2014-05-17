@@ -5,6 +5,7 @@ from ..db import db
 flask_app = Flask('sleepy', template_folder='app/web/templates', static_folder='app/web/static')
 flask_app.debug = True
 flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sleepy.db'
+flask_app.secret_key = 'blahblahblahblahblah'
 
 db.init_app(flask_app)
 
