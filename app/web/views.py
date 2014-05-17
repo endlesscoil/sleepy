@@ -5,17 +5,27 @@ from .forms import SourceForm
 
 frontend = Blueprint('frontend', __name__, url_prefix='/')
 
+TABS = [
+    ('/', 'Home'),
+    ('/sources', 'Sources'),
+    ('/settings', 'Settings'),
+]
+
+@frontend.context_processor
+def frontend_context_processor():
+    return { 'TABS': TABS }
+
 @frontend.route('/')
 def index():
     track = current_app.sleepy.current_track
 
-    return render_template('index.html', track=track)
+    return render_template('index.html', active='Home', track=track)
 
 @frontend.route('sources')
 def sources():
     sources = Source.query.all()
 
-    return render_template('sources.html', sources=sources)
+    return render_template('sources.html', active='Sources', sources=sources)
 
 @frontend.route('sources/<int:id>')
 def source(id):
@@ -28,7 +38,7 @@ def source(id):
         db.session.add(source)
         db.session.commit()
     
-    return render_template('source.html', form_target='/sources/{0}'.format(id), form=form)
+    return render_template('source.html', active='Sources', form_target='/sources/{0}'.format(id), form=form)
 
 @frontend.route('sources/create', endpoint='create_source', methods=['GET', 'POST'])
 def create_source():
@@ -41,4 +51,4 @@ def create_source():
         db.session.add(source)
         db.session.commit()
 
-    return render_template('source.html', form_target='/sources/create', form=form)
+    return render_template('source.html', active='Sources', form_target='/sources/create', form=form)

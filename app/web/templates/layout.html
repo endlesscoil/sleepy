@@ -22,9 +22,9 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="/">Home</a></li>
-                        <li><a href="/sources">Sources</a></li>
-                        <li><a href="/settings">Settings</a></li>
+                        {% for path, text in TABS %}
+                            <li{% if active == text %} class="active"{% endif %}><a href="{{ path }}">{{ text }}</a></li>
+                        {% endfor %}
                     </ul>
                 </div>
             </div>
