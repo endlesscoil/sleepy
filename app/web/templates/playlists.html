@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <div class="container">
+        <h2>{{ source.name }}</h2>
+        <hr>
+        <br>
+        <h4>Playlists Enabled</h4>
+        <table class="table">
+            {% for playlist in playlists %}
+                {% if loop.first %}
+                    <tr><th>Playlist Name</th></tr>
+                {% endif %}
+                <tr>
+                    <td>{{ playlist }}</tr>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>No playlists.</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <h4>Playlists Available</h4>
+        <form role="form" method="POST" action="{{ form_target }}">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.playlist.label }} {{ form.playlist(class_='form-control') }}
+            </div>
+            {% if form.playlist.errors %}
+                <ul class="text-danger">
+                    {% for error in form.playlist.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="form-group">
+                {{ form.submit(class_="btn btn-default") }}
+            </div>
+        </form>
+    </div>
+{% endblock %}

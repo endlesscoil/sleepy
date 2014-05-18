@@ -23,6 +23,7 @@ class Sources(object):
         for s in sources:
             self.log.debug('Loading source: %s', s.name)
             source = SOURCES[s.type]()
+            source.name = s.name
             source.url = s.url
             source.username = s.username
             source.password = s.password
@@ -31,4 +32,4 @@ class Sources(object):
                 self.log.debug('Adding playlist %s to source %s', playlist.name, s.name)
                 source.add_playlist(playlist.name)
 
-            self.sources[s.name] = source
+            self.sources[s.id] = source

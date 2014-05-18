@@ -9,26 +9,27 @@ class CherryMusicSource(object):
     def __init__(self, url=None):
         self.log = logging.getLogger(self.__class__.__name__)
 
+        self.name = None
         self._url = None
         self._cherrymusic = CherryMusicClient()
-        self._authenticated = False
+        self.authenticated = False
         self._current_playlist = None
         self._current_song = None
         self._username = None
         self._password = None
-        self._playlists = []
+        self.playlists = []
 
     def authenticate(self):
         self.log.info('Authenticating with CherryMusic..')
-        self._authenticated = self._cherrymusic.login(self._username, self._password)
-        self.log.debug('Results: %r', self._authenticated)
+        self.authenticated = self._cherrymusic.login(self._username, self._password)
+        self.log.debug('Results: %r', self.authenticated)
 
-        if self._authenticated:
+        if self.authenticated:
             self._cherrymusic.load_playlists()
 
-            self.switch(self._current_playlist)
+        self.log.debug('Results: %r', self.authenticated)
 
-        return self._authenticated
+        return self.authenticated
 
     def switch(self, playlist_name):
         self.log.info('Switching playlist to %s', playlist_name)
@@ -65,8 +66,13 @@ class CherryMusicSource(object):
 
         return info
 
+    def get_playlists(self):
+        self._cherrymusic.load_playlists()
+
+        return [playlist.title for playlist in self._cherrymusic.playlists]
+
     def add_playlist(self, name):
-        self._playlists.append(name)
+        self.playlists.append(name)
 
         if self._current_playlist is None:
             self._current_playlist = name
@@ -100,24 +106,26 @@ class PandoraSource(object):
     def __init__(self, url=None):
         self.log = logging.getLogger(self.__class__.__name__)
 
+        self.name = None
         self._pandora = Pandora()
-        self._authenticated = False
+        self.authenticated = False
         self._current_station = None
         self._url = None
         self._username = None
         self._password = None
-        self._playlists = []
+        self.playlists = []
 
     def authenticate(self):
         self.log.info('Authenticating with Pandora..')
 
-        self._authenticated = self._pandora.authenticate(self._username, self._password)
+        self.authenticated = self._pandora.authenticate(self._username, self._password)
 
-        self.log.debug('Results: %r', self._authenticated)
+        if self.authenticated:
+            self._pandora.update_station_list()
 
-        self.switch(self._current_station)
+        self.log.debug('Results: %r', self.authenticated)
 
-        return self._authenticated
+        return self.authenticated
 
     def switch(self, station_name):
         self.log.info('Switching playlist to %s', station_name)
@@ -130,6 +138,11 @@ class PandoraSource(object):
                 self._pandora.switch_station(station)
 
         return self._current_station
+
+    def get_playlists(self):
+        self._pandora.update_station_list()
+
+        return [station['stationName'] for station in self._pandora.stations]
 
     def next_song(self):
         self.log.info('Retrieving next song..')
@@ -154,7 +167,7 @@ class PandoraSource(object):
         return info
 
     def add_playlist(self, name):
-        self._playlists.append(name)
+        self.playlists.append(name)
 
         if self._current_station is None:
             self._current_station = name

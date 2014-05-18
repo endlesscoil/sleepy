@@ -26,5 +26,8 @@ rootlogger.info('Starting up..')
 sleepy = Sleepy()
 sleepy._current_source.authenticate()
 
+# TEMP
+sleepy._current_source.switch('sleepy2')
+
 sleepy.next(autoplay=True)
 sleepy.run()

@@ -13,3 +13,8 @@ class SourceForm(Form):
     password = PasswordField(u'Password', [Length(max=255)])
 
     submit = SubmitField(u'Save')
+
+class PlaylistsForm(Form):
+    playlist = SelectField(u'Playlist')
+
+    submit = SubmitField(u'Add')

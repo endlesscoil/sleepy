@@ -18,8 +18,8 @@ class Sleepy(object):
         self.log = logging.getLogger(self.__class__.__name__)
 
         self._session = Session()
-        self._sources = Sources(self._session)
-        self._current_source = self._sources.sources['CherryMusic']   # TEMP
+        self.sources = Sources(self._session)
+        self._current_source = self.sources.sources[2]   # TEMP. CherryMusic
         self._player = Player(self)
 
         self._running = False

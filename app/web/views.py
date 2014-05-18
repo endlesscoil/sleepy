@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, render_template
 
-from ..db import db, Source
-from .forms import SourceForm
+from ..db import db, Source, SourcePlaylist
+from .forms import SourceForm, PlaylistsForm
 
 frontend = Blueprint('frontend', __name__, url_prefix='/')
 
@@ -52,3 +52,25 @@ def create_source():
         db.session.commit()
 
     return render_template('source.html', active='Sources', form_target='/sources/create', form=form)
+
+@frontend.route('playlists/<int:id>', methods=['GET', 'POST'])
+def playlists(id):
+    form = PlaylistsForm()
+    source = current_app.sleepy.sources.sources[id]
+
+    playlists_available = []
+    form.playlist.choices = []
+    if source.authenticated or source.authenticate():
+        playlists_available = source.get_playlists()
+        form.playlist.choices = [(playlist, playlist) for playlist in playlists_available]
+
+    if form.validate_on_submit():
+        source_playlist = SourcePlaylist(source_id=id, name=form.playlist.data)
+
+        source.add_playlist(form.playlist.data)
+
+        db.session.add(source_playlist)
+        db.session.commit()
+
+    return render_template('playlists.html', active='Sources', source=source, playlists=source.playlists,
+                            form_target='/playlists/{0}'.format(id), form=form)
