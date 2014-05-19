@@ -12,7 +12,7 @@
                 <tr>
                     <td><a href="{{ url_for('frontend.source', id=source.id) }}">{{ source.name }}</a></td>
                     <td>{{ source.type }}</td>
-                    <td><a href="{{ url_for('frontend.playlists', id=source.id) }}">{{ source.playlists|length }}</a></td>
+                    <td><a class="btn btn-default" href="{{ url_for('frontend.playlists', id=source.id) }}">Playlists ({{ source.playlists|length }})</a></td>
                 </tr>
             {% endfor %}
         </table>
