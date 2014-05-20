@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, render_template
+from flask import Blueprint, current_app, render_template, redirect, url_for
 
 from ..db import db, Source, SourcePlaylist
 from .forms import SourceForm, PlaylistsForm
@@ -27,7 +27,7 @@ def sources():
 
     return render_template('sources.html', active='Sources', sources=sources)
 
-@frontend.route('sources/<int:id>')
+@frontend.route('sources/<int:id>', methods=['GET', 'POST'])
 def source(id):
     source = Source.query.filter_by(id=id).first_or_404()
     form = SourceForm(obj=source)
@@ -37,6 +37,8 @@ def source(id):
 
         db.session.add(source)
         db.session.commit()
+
+        return redirect(url_for('frontend.sources'))
     
     return render_template('source.html', active='Sources', form_target='/sources/{0}'.format(id), form=form)
 
@@ -51,7 +53,18 @@ def create_source():
         db.session.add(source)
         db.session.commit()
 
+        return redirect(url_for('frontend.sources'))
+
     return render_template('source.html', active='Sources', form_target='/sources/create', form=form)
+
+@frontend.route('sources/<int:id>/delete', endpoint='delete_source', methods=['GET', 'POST'])
+def delete_source(id):
+    source = Source.query.filter_by(id=id).first_or_404()
+
+    db.session.delete(source)
+    db.session.commit()
+
+    return redirect(url_for('frontend.sources'))
 
 @frontend.route('playlists/<int:id>', methods=['GET', 'POST'])
 def playlists(id):

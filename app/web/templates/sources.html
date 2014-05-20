@@ -6,13 +6,16 @@
             <tr>
                 <th>Name</th>
                 <th>Type</th>
-                <th>Number of Playlists</th>
+                <th>Actions</th>
             </tr>
             {% for source in sources %}
                 <tr>
                     <td><a href="{{ url_for('frontend.source', id=source.id) }}">{{ source.name }}</a></td>
                     <td>{{ source.type }}</td>
-                    <td><a class="btn btn-default" href="{{ url_for('frontend.playlists', id=source.id) }}">Playlists ({{ source.playlists|length }})</a></td>
+                    <td>
+                        <a class="btn btn-default" href="{{ url_for('frontend.playlists', id=source.id) }}">Playlists ({{ source.playlists|length }})</a>
+                        <a class="btn btn-default" href="{{ url_for('frontend.delete_source', id=source.id) }}">Delete</a>
+                    </td>
                 </tr>
             {% endfor %}
         </table>
