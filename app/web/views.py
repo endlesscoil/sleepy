@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, render_template, redirect, url_for
+from flask import Blueprint, current_app, render_template, redirect, url_for, flash
 
 from ..db import db, Source, SourcePlaylist
 from .forms import SourceForm, PlaylistsForm
@@ -75,6 +75,31 @@ def playlists(id):
     form.playlist.choices = []
     if source.authenticated or source.authenticate():
         playlists_available = source.get_playlists()
+        playlists_added = SourcePlaylist.query.filter_by(source_id=id).all()
+
+        # Automatically remove playlists that no longer exist.
+        removed_playlists = []
+        for p in source.playlists:
+            if p not in playlists_available:
+                sp = SourcePlaylist.query.filter_by(source_id=id, name=p).first()
+                removed_playlists.append(sp.name)
+                source.playlists.remove(sp.name)
+                db.session.delete(sp)
+
+        if len(removed_playlists) > 0:
+            msg = 'The following playlists were removed because they no longer exist on the source: '
+            for rp in removed_playlists:
+                msg += rp + ','
+
+            msg = msg[:-1]
+            flash(msg, 'bg-warning')
+            db.session.commit()
+
+        # Remove playlists that are already added.
+        for sp in playlists_added:
+            if sp.name in playlists_available:
+                playlists_available.remove(sp.name)
+
         form.playlist.choices = [(playlist, playlist) for playlist in playlists_available]
 
     if form.validate_on_submit():
