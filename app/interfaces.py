@@ -43,8 +43,6 @@ class ConsoleUI(threading.Thread):
 
     def _handle_input(self, key):
         if key in ('q', 'Q'):
-            self.log.debug('die')
-
             self._sleepy.shutdown()
 
             raise urwid.ExitMainLoop()
