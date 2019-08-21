@@ -1,7 +1,7 @@
 SQLAlchemy==0.9.4
 argparse==1.2.1
 python-pandora==0.10
-requests==2.2.1
+requests==2.20.0
 urwid==1.2.1
 wsgiref==0.1.2
 cherrymusicclient
